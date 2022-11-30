@@ -1,4 +1,5 @@
 import pygame
+import pygame_menu
 pygame.init()
 from random import randint
 import numpy as np
@@ -14,9 +15,17 @@ clock = pygame.time.Clock()
 imgPlayers = [
     pygame.image.load('person1.png'),
     pygame.image.load('person2.png')
-
-]
+    ]
 zpic = pygame.image.load('zombie.png')
+ground = pygame.image.load('ground.png')
+forest = pygame.image.load('forest_5.png')
+blood_image = pygame.image.load('blood.png')
+
+menu_image = pygame_menu.BaseImage('menu_image.png')
+
+gametheme = pygame_menu.Theme(background_color = menu_image, title_background_color = (0,0,0,18), title_font_shadow = True, title_font = pygame_menu.font.FONT_8BIT, title_font_size = (61), title_font_color = (232,252,194), widget_font = pygame_menu.font.FONT_8BIT)
+
+
 
 DIRECTS = [[0, -1], [1, 0], [0, 1], [-1, 0], [1, 1], [1, -1], [-1, 1], [-1, -1]]
 
@@ -125,6 +134,7 @@ class Zombie:
 
         self.color = color
         self.rect = pygame.Rect(px, py, TILE, TILE)
+        self.death_rect = pygame.Rect(px, py, TILE, TILE)
         self.direct = direct
         self.speedx = 1
         self.speedy = 1
@@ -190,7 +200,8 @@ class Zombie:
                         self.rect.y -= 1*self.speedy
                     if self.speedy == 1:
                         self.rect.y -= 1*self.speedy
-        self.image = pygame.transform.rotate(zpic, -self.direct * 90)      
+        self.image = pygame.transform.rotate(zpic, -self.direct * 90) 
+   
 
     def draw(self):
         window.blit(self.image, self.rect)
@@ -198,7 +209,9 @@ class Zombie:
     def damage(self,value):
         self.hp -= value
         if self.hp <= 0:
-            objects.remove(self)    
+            objects.remove(self) 
+
+            
 
 
             
@@ -239,8 +252,7 @@ class Block:
         pass
 
     def draw(self):
-        pygame.draw.rect(window, 'green', self.rect)
-        pygame.draw.rect(window, 'gray20', self.rect, 2)
+        window.blit(forest, self.rect)
 
     def damage(self, value):
         self.hp -= value
@@ -292,6 +304,21 @@ for row in level: # вся строка
     x = 0    
 zNumber = 0
 
+
+
+def menu_draw():
+    menu = pygame_menu.Menu('Great Survival', 800, 600, theme=gametheme)
+
+    menu.add.button('Survive')
+    menu.add.selector
+
+    menu.mainloop(window)
+
+    pygame.display.update()
+    clock.tick(FPS)
+
+#menu_draw()     #вызовет меню, кнопка не работает, сделать функцию game
+
 play = True
 while play:
     for event in pygame.event.get():
@@ -326,8 +353,9 @@ while play:
     
     
     
+    
 
-    window.fill('grey')
+    window.blit(ground, (0,0))
     
     for obj in objects: obj.draw()
     for bul in bullets: bul.draw()
@@ -335,3 +363,6 @@ while play:
     clock.tick(FPS)
 
 pygame.quit()
+
+
+
