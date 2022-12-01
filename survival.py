@@ -11,6 +11,7 @@ spawn_timer = 60
 
 window = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.Clock()
+gameover_value = 0
 
 imgPlayers = [
     pygame.image.load('person1.png'),
@@ -20,6 +21,7 @@ zpic = pygame.image.load('zombie.png')
 ground = pygame.image.load('ground.png')
 forest = pygame.image.load('forest_5.png')
 blood_image = pygame.image.load('blood.png')
+gameover_image = pygame.image.load('gameover.png')
 
 menu_image = pygame_menu.BaseImage('menu_image.png')
 
@@ -123,7 +125,6 @@ class Player:
         self.hp -= value
         if self.hp <= 0:
             objects.remove(self)
-            print('game over')
 
 
 class Zombie:
@@ -258,17 +259,12 @@ class Block:
         self.hp -= value
         if self.hp <= 0: objects.remove(self)
 
-
-
 bullets = []
 objects = []
-Player('blue', 100, 275, 0, (pygame.K_a, pygame.K_d, pygame.K_w, pygame.K_s, pygame.K_SPACE))
-Player('red', 650, 275, 0, (pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_DOWN, pygame.K_l))
+
 
 Zombie('green', 500, 60, 0)
 spawn_timer = 120
-
-
 
 
 level = [
@@ -309,60 +305,126 @@ zNumber = 0
 def menu_draw():
     menu = pygame_menu.Menu('Great Survival', 800, 600, theme=gametheme)
 
-    menu.add.button('Survive')
-    menu.add.selector
+    menu.add.button('Play Single', game_play_single)
+    menu.add.button('Play Coop', game_play_coop)
+    menu.add.button('Quit', game_quit)
 
     menu.mainloop(window)
 
     pygame.display.update()
     clock.tick(FPS)
 
-#menu_draw()     #вызовет меню, кнопка не работает, сделать функцию game
-
-play = True
-while play:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            play = False
-    
-
-    keys = pygame.key.get_pressed()
-    N = 0
-    zNumber = 0
-    for obj in objects: 
-        obj.update()
-        if obj.type == 'zombie': N +=1
-    zNumber = N
-    
-    for bul in bullets: bul.update()
-    if spawn_timer > 0: spawn_timer -= 1
-    if (spawn_timer <= 0) and (zNumber <10):
-        x = randint(40, 600)
-        y = randint(60, 400)
-        zrect = pygame.Rect(x, y, TILE, TILE)
-        check = True
-        for obj in objects:
-            if zrect.colliderect(obj.rect): 
-                check = False
-                break
-        if check == True:   
-            Zombie('green', x, y, 0)
-            spawn_timer = 120 
-            zNumber += 1
-    
-    
-    
-    
-    
-
-    window.blit(ground, (0,0))
-    
-    for obj in objects: obj.draw()
-    for bul in bullets: bul.draw()
-    pygame.display.update()
-    clock.tick(FPS)
-
-pygame.quit()
 
 
+def game_play_single():
 
+    Player('blue', 100, 275, 0, (pygame.K_a, pygame.K_d, pygame.K_w, pygame.K_s, pygame.K_SPACE))
+
+    play = True
+    while play:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                play = False
+        
+        global keys
+        keys = pygame.key.get_pressed()
+        N = 0
+        zNumber = 0
+        for obj in objects: 
+            obj.update()
+            if obj.type == 'zombie': N +=1
+        zNumber = N
+        
+        for bul in bullets: bul.update()
+        global spawn_timer
+        if spawn_timer > 0: spawn_timer -= 1
+        if (spawn_timer <= 0) and (zNumber <10):
+            x = randint(40, 600)
+            y = randint(60, 400)
+            zrect = pygame.Rect(x, y, TILE, TILE)
+            check = True
+            for obj in objects:
+                if zrect.colliderect(obj.rect): 
+                    check = False
+                    break
+            if check == True:   
+                Zombie('green', x, y, 0)
+                spawn_timer = 120 
+                zNumber += 1
+        
+        
+
+        press = pygame.key.get_pressed()
+        if press[pygame.K_ESCAPE]:
+            pygame.quit()
+
+        window.blit(ground, (0,0))
+        
+        
+        for obj in objects: obj.draw()
+        for bul in bullets: bul.draw()
+        pygame.display.update()
+        clock.tick(FPS)
+
+    pygame.quit()
+
+
+
+def game_play_coop():
+    Player('blue', 100, 275, 0, (pygame.K_a, pygame.K_d, pygame.K_w, pygame.K_s, pygame.K_SPACE))
+    Player('red', 650, 275, 0, (pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_DOWN, pygame.K_l))
+
+
+    play = True
+    while play:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                play = False
+        
+        global keys
+        keys = pygame.key.get_pressed()
+        N = 0
+        zNumber = 0
+        for obj in objects: 
+            obj.update()
+            if obj.type == 'zombie': N +=1
+        zNumber = N
+        
+        for bul in bullets: bul.update()
+        global spawn_timer
+        if spawn_timer > 0: spawn_timer -= 1
+        if (spawn_timer <= 0) and (zNumber <10):
+            x = randint(40, 600)
+            y = randint(60, 400)
+            zrect = pygame.Rect(x, y, TILE, TILE)
+            check = True
+            for obj in objects:
+                if zrect.colliderect(obj.rect): 
+                    check = False
+                    break
+            if check == True:   
+                Zombie('green', x, y, 0)
+                spawn_timer = 120 
+                zNumber += 1
+        
+        press = pygame.key.get_pressed()
+        if press[pygame.K_ESCAPE]:
+            pygame.quit()
+
+        window.blit(ground, (0,0))
+        
+        for obj in objects: obj.draw()
+        for bul in bullets: bul.draw()
+        pygame.display.update()
+        clock.tick(FPS)
+
+    pygame.quit()
+    
+
+def game_quit():
+    pygame.quit()
+
+
+
+
+menu_draw()     #вызовет меню, кнопка не работает, сделать функцию game
