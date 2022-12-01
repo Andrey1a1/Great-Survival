@@ -117,6 +117,10 @@ class Player:
         if self.shotTimer > 0: self.shotTimer -= 1
         self.image = pygame.transform.rotate(imgPlayers[plr-1], -self.direct * 90)
 
+        if self.hp < 50:
+            self.hp += 3 / FPS
+        print(self.hp)
+
 
     def draw(self):
         window.blit(self.image, self.rect)
@@ -124,7 +128,10 @@ class Player:
     def damage(self,value):
         self.hp -= value
         if self.hp <= 0:
+            global gameover_value
+            gameover_value += 1
             objects.remove(self)
+
 
 
 class Zombie:
@@ -210,6 +217,8 @@ class Zombie:
     def damage(self,value):
         self.hp -= value
         if self.hp <= 0:
+            global zombie_death
+            zombie_death = 1
             objects.remove(self) 
 
             
@@ -359,6 +368,9 @@ def game_play_single():
             pygame.quit()
 
         window.blit(ground, (0,0))
+        global gameover_value
+        if gameover_value == 1:
+            window.blit(gameover_image, (0,0))
         
         
         for obj in objects: obj.draw()
@@ -412,6 +424,10 @@ def game_play_coop():
             pygame.quit()
 
         window.blit(ground, (0,0))
+        global gameover_value
+        if gameover_value == 2:
+            window.blit(gameover_image, (0,0))
+        
         
         for obj in objects: obj.draw()
         for bul in bullets: bul.draw()
@@ -419,7 +435,8 @@ def game_play_coop():
         clock.tick(FPS)
 
     pygame.quit()
-    
+
+
 
 def game_quit():
     pygame.quit()
