@@ -12,6 +12,7 @@ spawn_timer = 60
 window = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.Clock()
 gameover_value = 0
+font = pygame.font.SysFont("ariel", 40)
 
 imgPlayers = [
     pygame.image.load('person1.png'),
@@ -41,14 +42,17 @@ class Player:
         self.direct = direct
         self.speed = 2
         self.hp = 50
-
+        self.kills = 0
         self.shotTimer = 0
-        self.shotDelay = 10
-        self.bulletSpeed = 10
+        self.shotDelay = 15
+        self.bulletSpeed = 12
         self.bulletDamage = 1
+        self.killsForShotgun  = 10
+        self.shotgunBullets = 5
 
         self.px = 50
         self.py = 50
+
 
 
         self.keyLEFT = keyList[0]
@@ -56,6 +60,7 @@ class Player:
         self.keyUP = keyList[2]
         self.keyDOWN = keyList[3]
         self.keySHOT = keyList[4]
+        self.congratulatedelay = 400
     
     def update(self):
         oldX, oldY = self.rect.topleft
@@ -100,13 +105,26 @@ class Player:
             self.rect.topleft = oldX, oldY
         if self.rect.y > HEIGHT - TILE:
             self.rect.topleft = oldX, oldY
-
+            #+ DIRECTS[self.direct][1]+16
         
         if keys[self.keySHOT] and self.shotTimer == 0:
             dx = DIRECTS[self.direct][0] * self.bulletSpeed
             dy = DIRECTS[self.direct][1] * self.bulletSpeed
-            Bullet(self, self.rect.centerx, self.rect.centery, dx, dy, self.bulletDamage)
-            self.shotTimer = self.shotDelay
+            
+            if self.kills >= self.killsForShotgun:
+                
+                for i in range(self.shotgunBullets):
+                    Bullet(self, self.rect.centerx+ DIRECTS[self.direct][1]+10, self.rect.centery+ DIRECTS[self.direct][0]+10, dx+ randint(-10,10)/5, dy+ randint(-10,10)/5, self.bulletDamage)
+                self.shotTimer = self.shotDelay*3
+            elif self.kills >= self.killsForShotgun*2:
+                for i in range(self.shotgunBullets*2):
+                    Bullet(self, self.rect.centerx+ DIRECTS[self.direct][1]+10, self.rect.centery+ DIRECTS[self.direct][0]+10, dx+ randint(-10,10)/5, dy+ randint(-10,10)/5, self.bulletDamage)
+                self.shotTimer = self.shotDelay*3
+             
+            else:
+
+                Bullet(self, self.rect.centerx+DIRECTS[self.direct][1]+10, self.rect.centery + DIRECTS[self.direct][0]+10, dx + randint(-10,10)/10, dy + randint(-10,10)/10, self.bulletDamage)
+                self.shotTimer = self.shotDelay
         plr = 0 
         for obj in objects:
             if obj.type == self.type:
@@ -118,20 +136,26 @@ class Player:
         self.image = pygame.transform.rotate(imgPlayers[plr-1], -self.direct * 90)
 
         if self.hp < 50:
-            self.hp += 3 / FPS
-        print(self.hp)
+            self.hp += 6 / FPS
+        
 
 
     def draw(self):
         window.blit(self.image, self.rect)
+        pygame.draw.line(window, 'green', (self.rect.x, self.rect.y), (self.rect.x+32*self.hp/50,self.rect.y), 5)
+        label = font.render(f"Kills: {self.kills}", True, "white")
+        window.blit(label, [50, 10])
 
+        if self.congratulatedelay >= 0 and self.kills >= self.killsForShotgun:
+            label = font.render(f"Now you have shotgun! Kill {self.killsForShotgun*2} for new great shotgun!", True, "white")
+            window.blit(label, [100, 40])
+            self.congratulatedelay -=1    
     def damage(self,value):
         self.hp -= value
         if self.hp <= 0:
             global gameover_value
             gameover_value += 1
             objects.remove(self)
-
 
 
 class Zombie:
@@ -152,7 +176,7 @@ class Zombie:
         self.spawn_timer = 60
         self.zNumber = 0
         self.image = pygame.transform.rotate(zpic, self.direct * 90)
-
+        
         self.biteDamage = 1
         
              
@@ -213,13 +237,18 @@ class Zombie:
 
     def draw(self):
         window.blit(self.image, self.rect)
+        pygame.draw.line(window, 'red', (self.rect.x, self.rect.y), (self.rect.x+32*self.hp/3,self.rect.y), 5)
 
     def damage(self,value):
         self.hp -= value
         if self.hp <= 0:
             global zombie_death
             zombie_death = 1
-            objects.remove(self) 
+            objects.remove(self)
+            for obj in objects:
+                if obj.type == 'player':
+                    obj.kills += 1
+                
 
             
 
@@ -369,12 +398,14 @@ def game_play_single():
 
         window.blit(ground, (0,0))
         global gameover_value
-        if gameover_value == 1:
-            window.blit(gameover_image, (0,0))
+        
         
         
         for obj in objects: obj.draw()
         for bul in bullets: bul.draw()
+        if gameover_value == 1:
+            window.fill('black')
+            window.blit(gameover_image, (0,0))
         pygame.display.update()
         clock.tick(FPS)
 
@@ -425,18 +456,16 @@ def game_play_coop():
 
         window.blit(ground, (0,0))
         global gameover_value
-        if gameover_value == 2:
-            window.blit(gameover_image, (0,0))
-        
-        
         for obj in objects: obj.draw()
         for bul in bullets: bul.draw()
+        
+        if gameover_value == 2:
+            window.fill('black')
+            window.blit(gameover_image, (0,0))
         pygame.display.update()
         clock.tick(FPS)
 
     pygame.quit()
-
-
 
 def game_quit():
     pygame.quit()
