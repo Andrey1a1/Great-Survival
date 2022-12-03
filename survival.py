@@ -49,6 +49,9 @@ class Player:
         self.bulletDamage = 1
         self.killsForShotgun  = 10
         self.shotgunBullets = 5
+        self.killsForBoss = 13
+        self.bossDelay = 10
+        self.killsAd = 5
 
         self.px = 50
         self.py = 50
@@ -120,11 +123,32 @@ class Player:
                 for i in range(self.shotgunBullets*2):
                     Bullet(self, self.rect.centerx+ DIRECTS[self.direct][1]+10, self.rect.centery+ DIRECTS[self.direct][0]+10, dx+ randint(-10,10)/5, dy+ randint(-10,10)/5, self.bulletDamage)
                 self.shotTimer = self.shotDelay*3
+            elif self.kills >= self.killsForShotgun*3:
+                for i in range(self.shotgunBullets*3):
+                    Bullet(self, self.rect.centerx+ DIRECTS[self.direct][1]+10, self.rect.centery+ DIRECTS[self.direct][0]+10, dx+ randint(-10,10)/5, dy+ randint(-10,10)/5, self.bulletDamage)
+                self.shotTimer = self.shotDelay*2
              
             else:
 
                 Bullet(self, self.rect.centerx+DIRECTS[self.direct][1]+10, self.rect.centery + DIRECTS[self.direct][0]+10, dx + randint(-10,10)/10, dy + randint(-10,10)/10, self.bulletDamage)
                 self.shotTimer = self.shotDelay
+
+            if self.kills >= self.killsForBoss:
+                x = randint(40, 600)
+                y = randint(60, 400)
+                zrect = pygame.Rect(x, y, TILE, TILE)
+                check = True
+                for obj in objects:
+                    if zrect.colliderect(obj.rect): 
+                        check = False
+                        break
+                if check == True:   
+                    Zombie(pygame.transform.rotate(zpic, self.direct * 90), x, y, 0, 10)
+                    self.killsForBoss += self.killsAd
+                    if self.killsAd > 3 : self.killsAd -= 1
+                    
+                    
+
         plr = 0 
         for obj in objects:
             if obj.type == self.type:
@@ -159,23 +183,24 @@ class Player:
 
 
 class Zombie:
-    def __init__(self, color, px, py, direct):
+    def __init__(self, image, px, py, direct, hp):
         objects.append(self)
         self.type = 'zombie'
         
 
-        self.color = color
+        
         self.rect = pygame.Rect(px, py, TILE, TILE)
         self.death_rect = pygame.Rect(px, py, TILE, TILE)
         self.direct = direct
         self.speedx = 1
         self.speedy = 1
-        self.hp = 3
+        self.hp = hp
+        self.hpmax = hp
         #self.px = 400
         #self.py = 200
         self.spawn_timer = 60
         self.zNumber = 0
-        self.image = pygame.transform.rotate(zpic, self.direct * 90)
+        self.image = image 
         
         self.biteDamage = 1
         
@@ -237,7 +262,7 @@ class Zombie:
 
     def draw(self):
         window.blit(self.image, self.rect)
-        pygame.draw.line(window, 'red', (self.rect.x, self.rect.y), (self.rect.x+32*self.hp/3,self.rect.y), 5)
+        pygame.draw.line(window, 'red', (self.rect.x, self.rect.y), (self.rect.x+32*self.hp/self.hpmax,self.rect.y), 5)
 
     def damage(self,value):
         self.hp -= value
@@ -301,7 +326,7 @@ bullets = []
 objects = []
 
 
-Zombie('green', 500, 60, 0)
+Zombie('green', 500, 60, 0, 3)
 spawn_timer = 120
 
 
@@ -386,7 +411,7 @@ def game_play_single():
                     check = False
                     break
             if check == True:   
-                Zombie('green', x, y, 0)
+                Zombie(pygame.transform.rotate(zpic, 0 * 90), x, y, 0, 3)
                 spawn_timer = 120 
                 zNumber += 1
         
@@ -446,7 +471,7 @@ def game_play_coop():
                     check = False
                     break
             if check == True:   
-                Zombie('green', x, y, 0)
+                Zombie(pygame.transform.rotate(zpic, 0 * 90), x, y, 0, 3)
                 spawn_timer = 120 
                 zNumber += 1
         
@@ -473,4 +498,4 @@ def game_quit():
 
 
 
-menu_draw()     #вызовет меню, кнопка не работает, сделать функцию game
+menu_draw()     
