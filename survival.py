@@ -33,7 +33,7 @@ gametheme = pygame_menu.Theme(background_color = menu_image, title_background_co
 DIRECTS = [[0, -1], [1, 0], [0, 1], [-1, 0], [1, 1], [1, -1], [-1, 1], [-1, -1]]
 
 class Player:
-    def __init__(self, color, px, py, direct, keyList):
+    def __init__(self, color, px, py, direct, keyList, hp):
         objects.append(self)
         self.type = 'player'
 
@@ -41,7 +41,8 @@ class Player:
         self.rect = pygame.Rect(px, py, TILE, TILE)
         self.direct = direct
         self.speed = 2
-        self.hp = 50
+        self.hp = hp
+        self.hpmax = hp
         self.kills = 0
         self.shotTimer = 0
         self.shotDelay = 15
@@ -52,9 +53,11 @@ class Player:
         self.killsForBoss = 13
         self.bossDelay = 10
         self.killsAd = 5
+        self.bossWarningDelay = 300
 
         self.px = 50
         self.py = 50
+        self.isBoss = False
 
 
 
@@ -64,6 +67,8 @@ class Player:
         self.keyDOWN = keyList[3]
         self.keySHOT = keyList[4]
         self.congratulatedelay = 400
+        self.congratulatedelay2 = 400
+        self.congratulatedelay3 = 400
     
     def update(self):
         oldX, oldY = self.rect.topleft
@@ -122,11 +127,11 @@ class Player:
             elif self.kills >= self.killsForShotgun*2:
                 for i in range(self.shotgunBullets*2):
                     Bullet(self, self.rect.centerx+ DIRECTS[self.direct][1]+10, self.rect.centery+ DIRECTS[self.direct][0]+10, dx+ randint(-10,10)/5, dy+ randint(-10,10)/5, self.bulletDamage)
-                self.shotTimer = self.shotDelay*3
+                self.shotTimer = self.shotDelay*2
             elif self.kills >= self.killsForShotgun*3:
                 for i in range(self.shotgunBullets*3):
                     Bullet(self, self.rect.centerx+ DIRECTS[self.direct][1]+10, self.rect.centery+ DIRECTS[self.direct][0]+10, dx+ randint(-10,10)/5, dy+ randint(-10,10)/5, self.bulletDamage)
-                self.shotTimer = self.shotDelay*2
+                self.shotTimer = self.shotDelay*1.5
              
             else:
 
@@ -146,6 +151,8 @@ class Player:
                     Zombie(pygame.transform.rotate(zpic, self.direct * 90), x, y, 0, 10)
                     self.killsForBoss += self.killsAd
                     if self.killsAd > 3 : self.killsAd -= 1
+                    self.isBoss = True
+                    self.bossWarningDelay = 300
                     
                     
 
@@ -159,21 +166,33 @@ class Player:
         if self.shotTimer > 0: self.shotTimer -= 1
         self.image = pygame.transform.rotate(imgPlayers[plr-1], -self.direct * 90)
 
-        if self.hp < 50:
+        if self.hp < self.hpmax:
             self.hp += 6 / FPS
         
 
 
     def draw(self):
         window.blit(self.image, self.rect)
-        pygame.draw.line(window, 'green', (self.rect.x, self.rect.y), (self.rect.x+32*self.hp/50,self.rect.y), 5)
+        pygame.draw.line(window, 'green', (self.rect.x, self.rect.y), (self.rect.x+32*self.hp/self.hpmax,self.rect.y), 5)
         label = font.render(f"Kills: {self.kills}", True, "white")
         window.blit(label, [50, 10])
 
         if self.congratulatedelay >= 0 and self.kills >= self.killsForShotgun:
-            label = font.render(f"Now you have shotgun! Kill {self.killsForShotgun*2} for new great shotgun!", True, "white")
+            label = font.render(f"Now you have standart shotgun! Kill {self.killsForShotgun*2} for new super shotgun!", True, "white")
             window.blit(label, [100, 40])
-            self.congratulatedelay -=1    
+            self.congratulatedelay -=1
+        if self.congratulatedelay2 >= 0 and self.kills >= self.killsForShotgun*2:
+            label = font.render(f"Now you have super shotgun! Kill {self.killsForShotgun*3} for great shotgun!", True, "white")
+            window.blit(label, [100, 40])
+            self.congratulatedelay2 -=1
+        if self.congratulatedelay3 >= 0 and self.kills >= self.killsForShotgun*3:
+            label = font.render(f"Now you have great shotgun! Good luck!", True, "white")
+            window.blit(label, [100, 40])
+            self.congratulatedelay3 -=1 
+        if self.isBoss and (self.bossWarningDelay > 0):
+            label = font.render(f"BOSS!", True, "red")
+            window.blit(label, [300, 100])
+            self.bossWarningDelay -=1 
     def damage(self,value):
         self.hp -= value
         if self.hp <= 0:
@@ -381,7 +400,7 @@ def menu_draw():
 
 def game_play_single():
 
-    Player('blue', 100, 275, 0, (pygame.K_a, pygame.K_d, pygame.K_w, pygame.K_s, pygame.K_SPACE))
+    Player('blue', 100, 275, 0, (pygame.K_a, pygame.K_d, pygame.K_w, pygame.K_s, pygame.K_SPACE), 100)
 
     play = True
     while play:
@@ -439,8 +458,8 @@ def game_play_single():
 
 
 def game_play_coop():
-    Player('blue', 100, 275, 0, (pygame.K_a, pygame.K_d, pygame.K_w, pygame.K_s, pygame.K_SPACE))
-    Player('red', 650, 275, 0, (pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_DOWN, pygame.K_l))
+    Player('blue', 100, 275, 0, (pygame.K_a, pygame.K_d, pygame.K_w, pygame.K_s, pygame.K_SPACE), 50)
+    Player('red', 650, 275, 0, (pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_DOWN, pygame.K_l), 50)
 
 
     play = True
