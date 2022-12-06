@@ -47,6 +47,7 @@ class Player:
         self.kills = 0
         self.shotTimer = 0
         self.shotDelay = 15
+        self.death = 0
         self.bulletSpeed = 12
         self.bulletDamage = 1
         self.killsForShotgun  = 10
@@ -103,7 +104,7 @@ class Player:
             self.direct = 6
 
         for obj in objects:
-            if obj != self and self.rect.colliderect(obj.rect):
+            if (obj != self) and (obj.type != 'zombie') and self.rect.colliderect(obj.rect):
                 self.rect.topleft = oldX, oldY
         
         if self.rect.x < 0:
@@ -180,15 +181,15 @@ class Player:
 
         if self.congratulatedelay >= 0 and self.kills >= self.killsForShotgun:
             label = font.render(f"Now you have standart shotgun! Kill {self.killsForShotgun*2} for new super shotgun!", True, "white")
-            window.blit(label, [100, 40])
+            window.blit(label, [10, 40])
             self.congratulatedelay -=1
         if self.congratulatedelay2 >= 0 and self.kills >= self.killsForShotgun*2:
             label = font.render(f"Now you have super shotgun! Kill {self.killsForShotgun*3} for great shotgun!", True, "white")
-            window.blit(label, [100, 40])
+            window.blit(label, [10, 40])
             self.congratulatedelay2 -=1
         if self.congratulatedelay3 >= 0 and self.kills >= self.killsForShotgun*3:
             label = font.render(f"Now you have great shotgun! Good luck!", True, "white")
-            window.blit(label, [100, 40])
+            window.blit(label, [10, 40])
             self.congratulatedelay3 -=1 
         if self.isBoss and (self.bossWarningDelay > 0):
             label = font.render(f"BOSS!", True, "red")
@@ -298,7 +299,6 @@ class Zombie:
             self.hp -= value
             if self.hp <= 0:
                 self.death = 1
-                #objects.remove(self)
                 for obj in objects:
                     if obj.type == 'player':
                         obj.kills += 1
@@ -325,7 +325,7 @@ class Bullet:
             bullets.remove(self)
         else:
             for obj in objects:
-                if obj != self.parent and obj.rect.collidepoint(self.px, self.py):
+                if obj != self.parent and obj.rect.collidepoint(self.px, self.py) and (obj.death == 0):
                     obj.damage(self.damage)
                     bullets.remove(self)
                     break
@@ -337,6 +337,7 @@ class Block:
     def __init__(self, px, py, size):
         objects.append(self)
         self.type = 'block'
+        self.death = 0
 
         self.rect = pygame.Rect(px, py, size, size)
         self.hp = 600
@@ -430,7 +431,7 @@ def game_play_single():
         for bul in bullets: bul.update()
         global spawn_timer
         if spawn_timer > 0: spawn_timer -= 1
-        if (spawn_timer <= 0) and (zNumber <10):
+        if (spawn_timer <= 0):
             x = randint(40, 600)
             y = randint(60, 400)
             zrect = pygame.Rect(x, y, TILE, TILE)
@@ -442,7 +443,7 @@ def game_play_single():
             if check == True:   
                 Zombie(pygame.transform.rotate(zpic, 0 * 90), x, y, 0, 3)
                 spawn_timer = 120 
-                zNumber += 1
+                
         
         
 
@@ -455,7 +456,10 @@ def game_play_single():
         
         
         
-        for obj in objects: obj.draw()
+        for obj in objects:
+            if obj.type != 'player': obj.draw()
+        for obj in objects:
+            if obj.type == 'player': obj.draw()
         for bul in bullets: bul.draw()
         if gameover_value == 1:
             window.fill('black')
@@ -490,7 +494,7 @@ def game_play_coop():
         for bul in bullets: bul.update()
         global spawn_timer
         if spawn_timer > 0: spawn_timer -= 1
-        if (spawn_timer <= 0) and (zNumber <10):
+        if (spawn_timer <= 0):
             x = randint(40, 600)
             y = randint(60, 400)
             zrect = pygame.Rect(x, y, TILE, TILE)
@@ -502,7 +506,7 @@ def game_play_coop():
             if check == True:   
                 Zombie(pygame.transform.rotate(zpic, 0 * 90), x, y, 0, 3)
                 spawn_timer = 120 
-                zNumber += 1
+                
         
         press = pygame.key.get_pressed()
         if press[pygame.K_ESCAPE]:
@@ -510,7 +514,10 @@ def game_play_coop():
 
         window.blit(ground, (0,0))
         global gameover_value
-        for obj in objects: obj.draw()
+        for obj in objects:
+            if obj.type != 'player': obj.draw()
+        for obj in objects:
+            if obj.type == 'player': obj.draw()
         for bul in bullets: bul.draw()
         
         if gameover_value == 2:
@@ -527,4 +534,4 @@ def game_quit():
 
 
 
-menu_draw()     
+menu_draw()    
