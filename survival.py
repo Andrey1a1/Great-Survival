@@ -21,7 +21,8 @@ imgPlayers = [
 zpic = pygame.image.load('zombie.png')
 zBossPic = pygame.image.load('zombie_boss.png')
 ground = pygame.image.load('ground.png')
-forest = pygame.image.load('forest_5.png')
+brick = pygame.image.load('brick.png')
+brick_damaged = pygame.image.load('brick_damaged.png')
 blood_image = pygame.image.load('blood.png')
 gameover_image = pygame.image.load('gameover.png')
 
@@ -345,8 +346,10 @@ class Block:
         pass
 
     def draw(self):
-        window.blit(forest, self.rect)
-
+        if self.hp > 300:
+            window.blit(brick, self.rect)
+        elif self.hp > 0 and self.hp <= 300:
+            window.blit(brick_damaged, self.rect)
     def damage(self, value):
         self.hp -= value
         if self.hp <= 0: objects.remove(self)
