@@ -533,7 +533,4 @@ def game_play_coop():
 def game_quit():
     pygame.quit()
 
-
-
-
 menu_draw()    
