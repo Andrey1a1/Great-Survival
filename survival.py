@@ -19,6 +19,7 @@ imgPlayers = [
     pygame.image.load('person2.png')
     ]
 zpic = pygame.image.load('zombie.png')
+zBossPic = pygame.image.load('zombie_boss.png')
 ground = pygame.image.load('ground.png')
 forest = pygame.image.load('forest_5.png')
 blood_image = pygame.image.load('blood.png')
@@ -148,7 +149,7 @@ class Player:
                         check = False
                         break
                 if check == True:   
-                    Zombie(pygame.transform.rotate(zpic, self.direct * 90), x, y, 0, 10)
+                    Zombie(pygame.transform.rotate(zBossPic, self.direct * 90), x, y, 0, 10)
                     self.killsForBoss += self.killsAd
                     if self.killsAd > 3 : self.killsAd -= 1
                     self.isBoss = True
