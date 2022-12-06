@@ -269,17 +269,16 @@ class Zombie:
                                 obj.damage(self.biteDamage)
 
             for obj in objects:
-                if (obj.type != self.type) and (self.rect.colliderect(obj.rect)):
+                if (obj.type == 'block' ) and (self.rect.colliderect(obj.rect)):
                     self.rect.topleft = oldX, oldY
-                    if obj.type != 'zombie':
-                        if self.speedx == -1:
-                            self.rect.x += 1*self.speedx
-                        if self.speedx == 1:
-                            self.rect.x += 1*self.speedx
-                        if self.speedy == -1:
-                            self.rect.y -= 1*self.speedy
-                        if self.speedy == 1:
-                            self.rect.y -= 1*self.speedy
+                    if self.speedx == -1:
+                        self.rect.x += 1*self.speedx
+                    if self.speedx == 1:
+                        self.rect.x += 1*self.speedx
+                    if self.speedy == -1:
+                        self.rect.y -= 1*self.speedy
+                    if self.speedy == 1:
+                        self.rect.y -= 1*self.speedy
             self.image = pygame.transform.rotate(self.image, -self.direct * 90) 
         elif self.death == 1:
             pass
