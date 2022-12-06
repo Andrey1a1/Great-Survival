@@ -220,6 +220,7 @@ class Zombie:
         #self.py = 200
         self.spawn_timer = 60
         self.zNumber = 0
+        self.death = 0
         self.image = image 
         
         self.biteDamage = 1
@@ -227,72 +228,80 @@ class Zombie:
              
 
     def update(self):
-        oldX, oldY = self.rect.topleft
-        plx = 1000
-        ply = 1000
-        pls = 1000
-        for obj in objects:
-            if obj.type == 'player':
-                if pls > np.sqrt((obj.rect.x - self.rect.x)**2 + (obj.rect.y - self.rect.y)):
-                    pls = np.sqrt((obj.rect.x - self.rect.x)**2 + (obj.rect.y - self.rect.y))
-                    plx = obj.rect.x
-                    ply = obj.rect.y                    
-        if self.rect.x > plx:
-            self.speedx = -1
-            self.direct = 3
-        if self.rect.x < plx:
-            self.speedx = 1
-            self.direct = 1
-        if self.rect.y > ply:
-            self.speedy = -1
-            self.direct = 0
-        if self.rect.y < ply:
-            self.speedy = 1
-            self.direct = 2
-        if (self.rect.x > plx) and (self.rect.y < ply):
-            self.direct = 6
-        if (self.rect.x > plx) and (self.rect.y > ply):
-            self.direct = 7
-        if (self.rect.x < plx) and (self.rect.y > ply):
-            self.direct = 5
-        if (self.rect.x < plx) and (self.rect.y < ply):
-            self.direct = 4
-
-        self.rect.x += self.speedx
-        self.rect.y += self.speedy
-
-        for obj in objects:
-                        if (self.rect.colliderect(obj.rect)) and  (obj.type != 'zombie'): 
-                            obj.damage(self.biteDamage)
-
-        for obj in objects:
-            if (obj.type != self.type) and (self.rect.colliderect(obj.rect)):
-                self.rect.topleft = oldX, oldY
-                if obj.type != 'zombie':
-                    if self.speedx == -1:
-                        self.rect.x += 1*self.speedx
-                    if self.speedx == 1:
-                        self.rect.x += 1*self.speedx
-                    if self.speedy == -1:
-                        self.rect.y -= 1*self.speedy
-                    if self.speedy == 1:
-                        self.rect.y -= 1*self.speedy
-        self.image = pygame.transform.rotate(zpic, -self.direct * 90) 
-   
-
-    def draw(self):
-        window.blit(self.image, self.rect)
-        pygame.draw.line(window, 'red', (self.rect.x, self.rect.y), (self.rect.x+32*self.hp/self.hpmax,self.rect.y), 5)
-
-    def damage(self,value):
-        self.hp -= value
-        if self.hp <= 0:
-            global zombie_death
-            zombie_death = 1
-            objects.remove(self)
+        if self.death == 0:
+            oldX, oldY = self.rect.topleft
+            plx = 1000
+            ply = 1000
+            pls = 1000
             for obj in objects:
                 if obj.type == 'player':
-                    obj.kills += 1
+                    if pls > np.sqrt((obj.rect.x - self.rect.x)**2 + (obj.rect.y - self.rect.y)):
+                        pls = np.sqrt((obj.rect.x - self.rect.x)**2 + (obj.rect.y - self.rect.y))
+                        plx = obj.rect.x
+                        ply = obj.rect.y                    
+            if self.rect.x > plx:
+                self.speedx = -1
+                self.direct = 3
+            if self.rect.x < plx:
+                self.speedx = 1
+                self.direct = 1
+            if self.rect.y > ply:
+                self.speedy = -1
+                self.direct = 0
+            if self.rect.y < ply:
+                self.speedy = 1
+                self.direct = 2
+            if (self.rect.x > plx) and (self.rect.y < ply):
+                self.direct = 6
+            if (self.rect.x > plx) and (self.rect.y > ply):
+                self.direct = 7
+            if (self.rect.x < plx) and (self.rect.y > ply):
+                self.direct = 5
+            if (self.rect.x < plx) and (self.rect.y < ply):
+                self.direct = 4
+
+            self.rect.x += self.speedx
+            self.rect.y += self.speedy
+
+            for obj in objects:
+                            if (self.rect.colliderect(obj.rect)) and  (obj.type != 'zombie'): 
+                                obj.damage(self.biteDamage)
+
+            for obj in objects:
+                if (obj.type != self.type) and (self.rect.colliderect(obj.rect)):
+                    self.rect.topleft = oldX, oldY
+                    if obj.type != 'zombie':
+                        if self.speedx == -1:
+                            self.rect.x += 1*self.speedx
+                        if self.speedx == 1:
+                            self.rect.x += 1*self.speedx
+                        if self.speedy == -1:
+                            self.rect.y -= 1*self.speedy
+                        if self.speedy == 1:
+                            self.rect.y -= 1*self.speedy
+            self.image = pygame.transform.rotate(self.image, -self.direct * 90) 
+        elif self.death == 1:
+            pass
+    
+
+    def draw(self):
+        if self.death == 0:
+            window.blit(self.image, self.rect)
+            pygame.draw.line(window, 'red', (self.rect.x, self.rect.y), (self.rect.x+32*self.hp/self.hpmax,self.rect.y), 5)
+        elif self.death == 1:
+            window.blit(blood_image, self.rect)
+
+
+
+    def damage(self,value):
+        if self.death == 0:
+            self.hp -= value
+            if self.hp <= 0:
+                self.death = 1
+                #objects.remove(self)
+                for obj in objects:
+                    if obj.type == 'player':
+                        obj.kills += 1
                 
 
             
@@ -346,7 +355,7 @@ bullets = []
 objects = []
 
 
-Zombie('green', 500, 60, 0, 3)
+Zombie(zpic, 500, 60, 0, 3)
 spawn_timer = 120
 
 
@@ -354,14 +363,14 @@ level = [
        "1111111111111111111111111",
        "1000000000000000000000001",
        "1000000000000000000000001",
-       "1000011111100000010000001",
-       "1000010000000000010000001",
-       "1000010100000000010000001",
+       "1000111111100000010000001",
+       "1000100000000000010000001",
+       "1000100000000000010000001",
        "1000000100000000010000001",
-       "1000000100000000000000001",
-       "1000000100000000000000001",
+       "1000000111000000000000001",
        "1000000000000000000000001",
-       "1000000111111111011100001",
+       "1000000000000000000000001",
+       "1000000111111110011100001",
        "1000000000000000001000001",
        "1000000000000000001000001",
        "1000000010000000001000001",
