@@ -13,7 +13,7 @@ window = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.Clock()
 gameover_value = 0
 pygame.display.set_caption('Great Survival')
-font = pygame.font.SysFont("ariel", 40)
+font = pygame.font.SysFont("ariel", 30)
 
 imgPlayers = [
     pygame.image.load('person1.png'),
