@@ -186,19 +186,19 @@ class Player:
 
         if self.congratulatedelay >= 0 and self.kills >= self.killsForShotgun:
             label = font.render(f"Now you have standart shotgun! Kill {self.killsForShotgun*2} for new super shotgun!", True, "white")
-            window.blit(label, [10, 40])
+            window.blit(label, [5, 60])
             self.congratulatedelay -=1
         if self.congratulatedelay2 >= 0 and self.kills >= self.killsForShotgun*2:
             label = font.render(f"Now you have super shotgun! Kill {self.killsForShotgun*3} for great shotgun!", True, "white")
-            window.blit(label, [10, 40])
+            window.blit(label, [5, 60])
             self.congratulatedelay2 -=1
         if self.congratulatedelay3 >= 0 and self.kills >= self.killsForShotgun*3:
             label = font.render(f"Now you have great shotgun! Good luck!", True, "white")
-            window.blit(label, [10, 40])
+            window.blit(label, [5, 60])
             self.congratulatedelay3 -=1 
         if self.isBoss and (self.bossWarningDelay > 0):
             label = font.render(f"BOSS!", True, "red")
-            window.blit(label, [300, 100])
+            window.blit(label, [360, 100])
             self.bossWarningDelay -=1 
     def damage(self,value):
         self.hp -= value
