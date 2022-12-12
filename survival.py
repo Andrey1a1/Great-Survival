@@ -12,6 +12,7 @@ spawn_timer = 60
 window = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.Clock()
 gameover_value = 0
+pygame.display.set_caption('Great Survival')
 font = pygame.font.SysFont("ariel", 40)
 
 imgPlayers = [
@@ -19,6 +20,9 @@ imgPlayers = [
     pygame.image.load('person2.png')
     ]
 zpic = pygame.image.load('zombie.png')
+zpic_right = pygame.image.load('zombie_right.png')
+zpic_down = pygame.image.load('zombie_down.png')
+zpic_left = pygame.image.load('zombie_left.png')
 zBossPic = pygame.image.load('zombie_boss.png')
 ground = pygame.image.load('ground.png')
 brick = pygame.image.load('brick.png')
@@ -237,30 +241,55 @@ class Zombie:
             pls = 1000
             for obj in objects:
                 if obj.type == 'player':
-                    if pls > np.sqrt((obj.rect.x - self.rect.x)**2 + (obj.rect.y - self.rect.y)):
-                        pls = np.sqrt((obj.rect.x - self.rect.x)**2 + (obj.rect.y - self.rect.y))
+                    if pls > np.sqrt((obj.rect.x - self.rect.x)**2 + (obj.rect.y - self.rect.y)**2):
+                        pls = np.sqrt((obj.rect.x - self.rect.x)**2 + (obj.rect.y - self.rect.y)**2)
                         plx = obj.rect.x
                         ply = obj.rect.y                    
-            if self.rect.x > plx:
-                self.speedx = -1
-                self.direct = 3
-            if self.rect.x < plx:
-                self.speedx = 1
-                self.direct = 1
-            if self.rect.y > ply:
+            if self.rect.x == plx and self.rect.y > ply:
+                self.speedx = 0
                 self.speedy = -1
+                self.direct = 3
+            if self.rect.x == plx and self.rect.y < ply:
+                self.speedx = 0
+                self.speedy = 1 
+                self.direct = 1
+            if self.rect.y == ply and self.rect.x > plx:
+                self.speedy = 0
+                self.speedx = -1
                 self.direct = 0
-            if self.rect.y < ply:
-                self.speedy = 1
+            if self.rect.y == ply and self.rect.x < plx:
+                self.speedy = 0
+                self.speedx = 1
                 self.direct = 2
             if (self.rect.x > plx) and (self.rect.y < ply):
+                self.speedx = -1
+                self.speedy = 1
                 self.direct = 6
+                self.image = zpic_down
             if (self.rect.x > plx) and (self.rect.y > ply):
+                self.speedx = -1
+                self.speedy = -1
                 self.direct = 7
+                self.image = zpic
             if (self.rect.x < plx) and (self.rect.y > ply):
+                self.speedx = 1
+                self.speedy = -1
                 self.direct = 5
+                self.image = zpic
             if (self.rect.x < plx) and (self.rect.y < ply):
+                self.speedx = 1
+                self.speedy = 1
                 self.direct = 4
+                self.image = zpic_down
+
+            if self.rect.x > plx and self.rect.y == ply:
+                self.image = zpic_left
+            if self.rect.x < plx and self.rect.y == ply:
+                self.image = zpic_right
+            if self.rect.y > ply and self.rect.x == plx:
+                self.image = zpic
+            if self.rect.y < ply and self.rect.x == plx:
+                self.image = zpic_down
 
             self.rect.x += self.speedx
             self.rect.y += self.speedy
@@ -273,14 +302,18 @@ class Zombie:
                 if (obj.type == 'block' ) and (self.rect.colliderect(obj.rect)):
                     self.rect.topleft = oldX, oldY
                     if self.speedx == -1:
-                        self.rect.x += 1*self.speedx
-                    if self.speedx == 1:
-                        self.rect.x += 1*self.speedx
-                    if self.speedy == -1:
-                        self.rect.y -= 1*self.speedy
-                    if self.speedy == 1:
-                        self.rect.y -= 1*self.speedy
-            self.image = pygame.transform.rotate(self.image, -self.direct * 90) 
+                        self.direct = 0
+                        self.rect.x -= 1*self.speedx
+                    elif self.speedx == 1:
+                        self.direct = 2
+                        self.rect.x -= 1*self.speedx
+                    elif self.speedy == -1:
+                        self.direct = 1
+                        self.rect.y += 1*self.speedy
+                    elif self.speedy == 1:
+                        self.direct = 3
+                        self.rect.y += 1*self.speedy
+            #self.image = pygame.transform.rotate(self.image, -self.direct * 90) 
         elif self.death == 1:
             pass
     
@@ -340,15 +373,15 @@ class Block:
         self.death = 0
 
         self.rect = pygame.Rect(px, py, size, size)
-        self.hp = 600
+        self.hp = 1600
 
     def update(self):
         pass
 
     def draw(self):
-        if self.hp > 300:
+        if self.hp > 800:
             window.blit(brick, self.rect)
-        elif self.hp > 0 and self.hp <= 300:
+        elif self.hp > 0 and self.hp <= 800:
             window.blit(brick_damaged, self.rect)
     def damage(self, value):
         self.hp -= value
