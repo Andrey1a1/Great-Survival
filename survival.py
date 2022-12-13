@@ -395,7 +395,7 @@ class Zombie:
                             self.rect.x -= 1*self.speedx
                         elif self.speedy == -1:
                             self.direct = 1
-                            self.rect.y += 1*self.speedy
+                            self.rect.y -= 1*self.speedy
                         elif self.speedy == 1:
                             self.direct = 3
                             self.rect.y += 1*self.speedy
