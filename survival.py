@@ -24,6 +24,9 @@ zpic_right = pygame.image.load('zombie_right.png')
 zpic_down = pygame.image.load('zombie_down.png')
 zpic_left = pygame.image.load('zombie_left.png')
 zBossPic = pygame.image.load('zombie_boss.png')
+zBossPic_right = pygame.image.load('zombie_boss_right.png')
+zBossPic_down = pygame.image.load('zombie_boss_down.png')
+zBossPic_left = pygame.image.load('zombie_boss_left.png')
 ground = pygame.image.load('ground.png')
 brick = pygame.image.load('brick.png')
 brick_damaged = pygame.image.load('brick_damaged.png')
@@ -155,7 +158,7 @@ class Player:
                         check = False
                         break
                 if check == True:   
-                    Zombie(pygame.transform.rotate(zBossPic, self.direct * 90), x, y, 0, 10)
+                    Zombie(zBossPic, x, y, 0, 10)
                     self.killsForBoss += self.killsAd
                     if self.killsAd > 3 : self.killsAd -= 1
                     self.isBoss = True
@@ -234,88 +237,170 @@ class Zombie:
              
 
     def update(self):
-        if self.death == 0:
-            oldX, oldY = self.rect.topleft
-            plx = 1000
-            ply = 1000
-            pls = 1000
-            for obj in objects:
-                if obj.type == 'player':
-                    if pls > np.sqrt((obj.rect.x - self.rect.x)**2 + (obj.rect.y - self.rect.y)**2):
-                        pls = np.sqrt((obj.rect.x - self.rect.x)**2 + (obj.rect.y - self.rect.y)**2)
-                        plx = obj.rect.x
-                        ply = obj.rect.y                    
-            if self.rect.x == plx and self.rect.y > ply:
-                self.speedx = 0
-                self.speedy = -1
-                self.direct = 3
-            if self.rect.x == plx and self.rect.y < ply:
-                self.speedx = 0
-                self.speedy = 1 
-                self.direct = 1
-            if self.rect.y == ply and self.rect.x > plx:
-                self.speedy = 0
-                self.speedx = -1
-                self.direct = 0
-            if self.rect.y == ply and self.rect.x < plx:
-                self.speedy = 0
-                self.speedx = 1
-                self.direct = 2
-            if (self.rect.x > plx) and (self.rect.y < ply):
-                self.speedx = -1
-                self.speedy = 1
-                self.direct = 6
-                self.image = zpic_down
-            if (self.rect.x > plx) and (self.rect.y > ply):
-                self.speedx = -1
-                self.speedy = -1
-                self.direct = 7
-                self.image = zpic
-            if (self.rect.x < plx) and (self.rect.y > ply):
-                self.speedx = 1
-                self.speedy = -1
-                self.direct = 5
-                self.image = zpic
-            if (self.rect.x < plx) and (self.rect.y < ply):
-                self.speedx = 1
-                self.speedy = 1
-                self.direct = 4
-                self.image = zpic_down
+        if self.image == zpic or self.image == zpic_down or self.image == zpic_left or self.image == zpic_right:
+            if self.death == 0:
+                oldX, oldY = self.rect.topleft
+                plx = 1000
+                ply = 1000
+                pls = 1000
+                for obj in objects:
+                    if obj.type == 'player':
+                        if pls > np.sqrt((obj.rect.x - self.rect.x)**2 + (obj.rect.y - self.rect.y)**2):
+                            pls = np.sqrt((obj.rect.x - self.rect.x)**2 + (obj.rect.y - self.rect.y)**2)
+                            plx = obj.rect.x
+                            ply = obj.rect.y                    
+                if self.rect.x == plx and self.rect.y > ply:
+                    self.speedx = 0
+                    self.speedy = -1
+                    self.direct = 3
+                if self.rect.x == plx and self.rect.y < ply:
+                    self.speedx = 0
+                    self.speedy = 1 
+                    self.direct = 1
+                if self.rect.y == ply and self.rect.x > plx:
+                    self.speedy = 0
+                    self.speedx = -1
+                    self.direct = 0
+                if self.rect.y == ply and self.rect.x < plx:
+                    self.speedy = 0
+                    self.speedx = 1
+                    self.direct = 2
+                if (self.rect.x > plx) and (self.rect.y < ply):
+                    self.speedx = -1
+                    self.speedy = 1
+                    self.direct = 6
+                    self.image = zpic_down
+                if (self.rect.x > plx) and (self.rect.y > ply):
+                    self.speedx = -1
+                    self.speedy = -1
+                    self.direct = 7
+                    self.image = zpic
+                if (self.rect.x < plx) and (self.rect.y > ply):
+                    self.speedx = 1
+                    self.speedy = -1
+                    self.direct = 5
+                    self.image = zpic
+                if (self.rect.x < plx) and (self.rect.y < ply):
+                    self.speedx = 1
+                    self.speedy = 1
+                    self.direct = 4
+                    self.image = zpic_down
 
-            if self.rect.x > plx and self.rect.y == ply:
-                self.image = zpic_left
-            if self.rect.x < plx and self.rect.y == ply:
-                self.image = zpic_right
-            if self.rect.y > ply and self.rect.x == plx:
-                self.image = zpic
-            if self.rect.y < ply and self.rect.x == plx:
-                self.image = zpic_down
+                if self.rect.x > plx and self.rect.y == ply:
+                    self.image = zpic_left
+                if self.rect.x < plx and self.rect.y == ply:
+                    self.image = zpic_right
+                if self.rect.y > ply and self.rect.x == plx:
+                    self.image = zpic
+                if self.rect.y < ply and self.rect.x == plx:
+                    self.image = zpic_down
 
-            self.rect.x += self.speedx
-            self.rect.y += self.speedy
+                self.rect.x += self.speedx
+                self.rect.y += self.speedy
 
-            for obj in objects:
-                            if (self.rect.colliderect(obj.rect)) and  (obj.type != 'zombie'): 
-                                obj.damage(self.biteDamage)
+                for obj in objects:
+                                if (self.rect.colliderect(obj.rect)) and  (obj.type != 'zombie'): 
+                                    obj.damage(self.biteDamage)
 
-            for obj in objects:
-                if (obj.type == 'block' ) and (self.rect.colliderect(obj.rect)):
-                    self.rect.topleft = oldX, oldY
-                    if self.speedx == -1:
-                        self.direct = 0
-                        self.rect.x -= 1*self.speedx
-                    elif self.speedx == 1:
-                        self.direct = 2
-                        self.rect.x -= 1*self.speedx
-                    elif self.speedy == -1:
-                        self.direct = 1
-                        self.rect.y += 1*self.speedy
-                    elif self.speedy == 1:
-                        self.direct = 3
-                        self.rect.y += 1*self.speedy
-            #self.image = pygame.transform.rotate(self.image, -self.direct * 90) 
-        elif self.death == 1:
-            pass
+                for obj in objects:
+                    if (obj.type == 'block' ) and (self.rect.colliderect(obj.rect)):
+                        self.rect.topleft = oldX, oldY
+                        if self.speedx == -1:
+                            self.direct = 0
+                            self.rect.x -= 1*self.speedx
+                        elif self.speedx == 1:
+                            self.direct = 2
+                            self.rect.x -= 1*self.speedx
+                        elif self.speedy == -1:
+                            self.direct = 1
+                            self.rect.y += 1*self.speedy
+                        elif self.speedy == 1:
+                            self.direct = 3
+                            self.rect.y += 1*self.speedy
+            elif self.death == 1:
+                pass
+        elif self.image == zBossPic_right or self.image == zBossPic_left or self.image == zBossPic_down or self.image == zBossPic:
+            if self.death == 0:
+                oldX, oldY = self.rect.topleft
+                plx = 1000
+                ply = 1000
+                pls = 1000
+                for obj in objects:
+                    if obj.type == 'player':
+                        if pls > np.sqrt((obj.rect.x - self.rect.x)**2 + (obj.rect.y - self.rect.y)**2):
+                            pls = np.sqrt((obj.rect.x - self.rect.x)**2 + (obj.rect.y - self.rect.y)**2)
+                            plx = obj.rect.x
+                            ply = obj.rect.y                    
+                if self.rect.x == plx and self.rect.y > ply:
+                    self.speedx = 0
+                    self.speedy = -1
+                    self.direct = 3
+                if self.rect.x == plx and self.rect.y < ply:
+                    self.speedx = 0
+                    self.speedy = 1 
+                    self.direct = 1
+                if self.rect.y == ply and self.rect.x > plx:
+                    self.speedy = 0
+                    self.speedx = -1
+                    self.direct = 0
+                if self.rect.y == ply and self.rect.x < plx:
+                    self.speedy = 0
+                    self.speedx = 1
+                    self.direct = 2
+                if (self.rect.x > plx) and (self.rect.y < ply):
+                    self.speedx = -1
+                    self.speedy = 1
+                    self.direct = 6
+                    self.image = zBossPic_down
+                if (self.rect.x > plx) and (self.rect.y > ply):
+                    self.speedx = -1
+                    self.speedy = -1
+                    self.direct = 7
+                    self.image = zBossPic
+                if (self.rect.x < plx) and (self.rect.y > ply):
+                    self.speedx = 1
+                    self.speedy = -1
+                    self.direct = 5
+                    self.image = zBossPic
+                if (self.rect.x < plx) and (self.rect.y < ply):
+                    self.speedx = 1
+                    self.speedy = 1
+                    self.direct = 4
+                    self.image = zBossPic_down
+
+                if self.rect.x > plx and self.rect.y == ply:
+                    self.image = zBossPic_left
+                if self.rect.x < plx and self.rect.y == ply:
+                    self.image = zBossPic_right
+                if self.rect.y > ply and self.rect.x == plx:
+                    self.image = zBossPic
+                if self.rect.y < ply and self.rect.x == plx:
+                    self.image = zBossPic_down
+
+                self.rect.x += self.speedx
+                self.rect.y += self.speedy
+
+                for obj in objects:
+                                if (self.rect.colliderect(obj.rect)) and  (obj.type != 'zombie'): 
+                                    obj.damage(self.biteDamage)
+
+                for obj in objects:
+                    if (obj.type == 'block' ) and (self.rect.colliderect(obj.rect)):
+                        self.rect.topleft = oldX, oldY
+                        if self.speedx == -1:
+                            self.direct = 0
+                            self.rect.x -= 1*self.speedx
+                        elif self.speedx == 1:
+                            self.direct = 2
+                            self.rect.x -= 1*self.speedx
+                        elif self.speedy == -1:
+                            self.direct = 1
+                            self.rect.y += 1*self.speedy
+                        elif self.speedy == 1:
+                            self.direct = 3
+                            self.rect.y += 1*self.speedy
+            elif self.death == 1:
+                pass
     
 
     def draw(self):
@@ -476,7 +561,7 @@ def game_play_single():
                     check = False
                     break
             if check == True:   
-                Zombie(pygame.transform.rotate(zpic, 0 * 90), x, y, 0, 3)
+                Zombie(zpic, x, y, 0, 3)
                 spawn_timer = 120 
                 
         
@@ -539,7 +624,7 @@ def game_play_coop():
                     check = False
                     break
             if check == True:   
-                Zombie(pygame.transform.rotate(zpic, 0 * 90), x, y, 0, 3)
+                Zombie(zpic, x, y, 0, 3)
                 spawn_timer = 120 
                 
         
