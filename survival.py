@@ -49,7 +49,7 @@ class Player:
         self.color = color
         self.rect = pygame.Rect(px, py, TILE, TILE)
         self.direct = direct
-        self.speed = 2
+        self.speed = 3
         self.hp = hp
         self.hpmax = hp
         self.kills = 0
