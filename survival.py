@@ -18,7 +18,10 @@ font = pygame.font.SysFont("ariel", 30)
 
 
 
-gametheme = pygame_menu.Theme(background_color = menu_image, title_background_color = (0,0,0,18), title_font_shadow = True, title_font = pygame_menu.font.FONT_8BIT, title_font_size = (61), title_font_color = (232,252,194), widget_font = pygame_menu.font.FONT_8BIT)
+gametheme = pygame_menu.Theme(background_color = menu_image, title_background_color = (0,0,0,18),
+title_font_shadow = True, title_font = pygame_menu.font.FONT_8BIT, title_font_size = (61),
+title_font_color = (232,252,194), widget_font = pygame_menu.font.FONT_8BIT
+)
 
 
 
@@ -115,20 +118,24 @@ class Player:
             if self.kills >= self.killsForShotgun:
                 
                 for i in range(self.shotgunBullets):
-                    Bullet(self, self.rect.centerx+ DIRECTS[self.direct][1]+10, self.rect.centery+ DIRECTS[self.direct][0]+10, dx+ randint(-10,10)/5, dy+ randint(-10,10)/5, self.bulletDamage)
+                    Bullet(self, self.rect.centerx+ DIRECTS[self.direct][1]+10, self.rect.centery+ DIRECTS[self.direct][0]+10,
+                    dx+ randint(-10,10)/5, dy+ randint(-10,10)/5, self.bulletDamage)
                 self.shotTimer = self.shotDelay*3
             elif self.kills >= self.killsForShotgun*2:
                 for i in range(self.shotgunBullets*2):
-                    Bullet(self, self.rect.centerx+ DIRECTS[self.direct][1]+10, self.rect.centery+ DIRECTS[self.direct][0]+10, dx+ randint(-10,10)/5, dy+ randint(-10,10)/5, self.bulletDamage)
+                    Bullet(self, self.rect.centerx+ DIRECTS[self.direct][1]+10, self.rect.centery+ DIRECTS[self.direct][0]+10,
+                    dx+ randint(-10,10)/5, dy+ randint(-10,10)/5, self.bulletDamage)
                 self.shotTimer = self.shotDelay*2
             elif self.kills >= self.killsForShotgun*3:
                 for i in range(self.shotgunBullets*3):
-                    Bullet(self, self.rect.centerx+ DIRECTS[self.direct][1]+10, self.rect.centery+ DIRECTS[self.direct][0]+10, dx+ randint(-10,10)/5, dy+ randint(-10,10)/5, self.bulletDamage)
+                    Bullet(self, self.rect.centerx+ DIRECTS[self.direct][1]+10, self.rect.centery+ DIRECTS[self.direct][0]+10,
+                    dx+ randint(-10,10)/5, dy+ randint(-10,10)/5, self.bulletDamage)
                 self.shotTimer = self.shotDelay*1.5
              
             else:
 
-                Bullet(self, self.rect.centerx+DIRECTS[self.direct][1]+10, self.rect.centery + DIRECTS[self.direct][0]+10, dx + randint(-10,10)/10, dy + randint(-10,10)/10, self.bulletDamage)
+                Bullet(self, self.rect.centerx+DIRECTS[self.direct][1]+10, self.rect.centery + DIRECTS[self.direct][0]+10,
+                dx + randint(-10,10)/10, dy + randint(-10,10)/10, self.bulletDamage)
                 self.shotTimer = self.shotDelay
 
             if self.kills >= self.killsForBoss:
@@ -173,19 +180,19 @@ class Player:
         if self.congratulatedelay >= 0 and self.kills >= self.killsForShotgun:
             label = font.render(f"Now you have standart shotgun! Kill {self.killsForShotgun*2} for new super shotgun!", True, "white")
             window.blit(label, [5, 60])
-            self.congratulatedelay -=1
+            self.congratulatedelay -= 1
         if self.congratulatedelay2 >= 0 and self.kills >= self.killsForShotgun*2:
             label = font.render(f"Now you have super shotgun! Kill {self.killsForShotgun*3} for great shotgun!", True, "white")
             window.blit(label, [5, 60])
-            self.congratulatedelay2 -=1
+            self.congratulatedelay2 -= 1
         if self.congratulatedelay3 >= 0 and self.kills >= self.killsForShotgun*3:
             label = font.render(f"Now you have great shotgun! Good luck!", True, "white")
             window.blit(label, [5, 60])
-            self.congratulatedelay3 -=1 
+            self.congratulatedelay3 -= 1 
         if self.isBoss and (self.bossWarningDelay > 0):
             label = font.render(f"BOSS!", True, "red")
             window.blit(label, [360, 100])
-            self.bossWarningDelay -=1 
+            self.bossWarningDelay -= 1 
     def damage(self,value):
         self.hp -= value
         if self.hp <= 0:
@@ -554,7 +561,7 @@ def game_play_single():
         if press[pygame.K_ESCAPE]:
             pygame.quit()
 
-        window.blit(ground, (0,0))
+        window.blit(ground, (0, 0))
         global gameover_value
         
         
@@ -566,7 +573,7 @@ def game_play_single():
         for bul in bullets: bul.draw()
         if gameover_value == 1:
             window.fill('black')
-            window.blit(gameover_image, (0,0))
+            window.blit(gameover_image, (0, 0))
         pygame.display.update()
         clock.tick(FPS)
 
@@ -615,7 +622,7 @@ def game_play_coop():
         if press[pygame.K_ESCAPE]:
             pygame.quit()
 
-        window.blit(ground, (0,0))
+        window.blit(ground, (0, 0))
         global gameover_value
         for obj in objects:
             if obj.type != 'player': obj.draw()
@@ -625,7 +632,7 @@ def game_play_coop():
         
         if gameover_value == 2:
             window.fill('black')
-            window.blit(gameover_image, (0,0))
+            window.blit(gameover_image, (0, 0))
         pygame.display.update()
         clock.tick(FPS)
 
